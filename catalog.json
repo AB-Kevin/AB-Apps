@@ -1,0 +1,54 @@
+{
+  "apps": [
+    {
+      "id": "billmanager",
+      "name": "BillManager",
+      "description": "Preview, tag and add notes to bills.",
+      "repo": "AB-Kevin/BillManager",
+      "appId": "com.billmanager.filemanager",
+      "productName": "BillManager",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
+    },
+    {
+      "id": "duplicate-checker",
+      "name": "Duplicate Checker",
+      "description": "Flag likely duplicate rows in incoming spreadsheets for review.",
+      "repo": "AB-Kevin/DuplicateChecker",
+      "appId": "org.anabaptistbrotherhood.duplicatechecker",
+      "productName": "Duplicate Checker",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
+    },
+    {
+      "id": "applicationmanager",
+      "name": "ApplicationManager",
+      "description": "Preview, tag and add notes to applications.",
+      "repo": "AB-Kevin/ApplicationManager",
+      "appId": "com.applicationmanager.filemanager",
+      "productName": "ApplicationManager",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
+    },
+    {
+      "id": "formtracker",
+      "name": "FormTracker",
+      "description": "Send form requests to a mailing list and track who has responded.",
+      "repo": "AB-Kevin/FormTracker",
+      "appId": "com.formtracker.app",
+      "productName": "FormTracker",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
+    },
+    {
+      "id": "contractor-time",
+      "name": "Contractor Time",
+      "description": "Log your time and create invoices.",
+      "repo": "AB-Kevin/contractor-time",
+      "appId": "org.anabaptistbrotherhood.contractortime",
+      "productName": "Contractor Time",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
+    }
+  ]
+}
