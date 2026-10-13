@@ -41,12 +41,12 @@
       "classes": ["manager", "employee", "contractor"]
     },
     {
-      "id": "contractor-time",
-      "name": "Contractor Time",
+      "id": "keeptime",
+      "name": "KeepTime",
       "description": "Log your time and create invoices.",
       "repo": "AB-Kevin/contractor-time",
-      "appId": "org.anabaptistbrotherhood.contractortime",
-      "productName": "Contractor Time",
+      "appId": "org.anabaptistbrotherhood.keeptime",
+      "productName": "KeepTime",
       "icon": "build/icon.png",
       "classes": ["manager", "employee", "contractor"]
     },
