@@ -21,10 +21,10 @@ const entry = (changes = {}) => ({
   ...changes,
 });
 
-test('the built-in catalog lists the five apps, all valid', () => {
+test('the built-in catalog lists the six apps, all valid', () => {
   const { apps, skipped } = validateCatalog(JSON.parse(fs.readFileSync(BUNDLED, 'utf8')));
   assert.deepEqual(skipped, []);
-  assert.deepEqual(apps.map((a) => a.name), ['BillManager', 'Duplicate Checker', 'ApplicationManager', 'FormTracker', 'Contractor Time']);
+  assert.deepEqual(apps.map((a) => a.name), ['BillManager', 'Duplicate Checker', 'ApplicationManager', 'FormTracker', 'KeepTime', 'SendNewsletters']);
 });
 
 test('entries that could run something unexpected are left out', () => {
@@ -75,7 +75,7 @@ test('the catalog comes from GitHub and is saved for when GitHub is unreachable'
   fs.rmSync(cachePath);
   const third = await loadCatalog({ fetch: offline, cachePath, bundledPath: BUNDLED });
   assert.equal(third.source, 'built-in');
-  assert.equal(third.apps.length, 5);
+  assert.equal(third.apps.length, 6);
 });
 
 test('a broken catalog on GitHub doesn\'t replace a good saved one', async () => {

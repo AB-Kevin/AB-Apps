@@ -45,7 +45,7 @@
       "name": "KeepTime",
       "description": "Log your time and create invoices.",
       "repo": "AB-Kevin/contractor-time",
-      "appId": "org.anabaptistbrotherhood.contractor-time",
+      "appId": "org.anabaptistbrotherhood.contractortime",
       "productName": "KeepTime",
       "icon": "build/icon.png",
       "classes": ["manager", "employee", "contractor"]
