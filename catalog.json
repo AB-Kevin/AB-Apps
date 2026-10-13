@@ -49,6 +49,17 @@
       "productName": "Contractor Time",
       "icon": "build/icon.png",
       "classes": ["manager", "employee", "contractor"]
+    },
+    {
+      "id": "sendnewsletters",
+      "name": "SendNewsletters",
+      "description": "Keep the newsletter mailing list, email the newsletter as a PDF, and get addresses and counts for mailed copies.",
+      "repo": "AB-Kevin/SendNewsletters",
+      "appId": "com.sendnewsletters.app",
+      "productName": "SendNewsletters",
+      "icon": "build/icon.png",
+      "classes": ["manager", "employee", "contractor"]
     }
+
   ]
 }
