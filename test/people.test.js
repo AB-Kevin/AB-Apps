@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { savePerson, saveAccess, importContractorTime } = require('../src/main/people');
+const { savePerson, saveAccess } = require('../src/main/people');
 const { verifyPin } = require('../src/main/auth');
 const identity = require('../src/main/identity');
 
@@ -61,35 +61,6 @@ test('app access keeps only choices that differ from the catalog', () => {
   const settings = { access: { gone: ['manager'] } };
   saveAccess(settings, { a: ['employee', 'manager'], b: ['manager', 'contractor', 'nonsense'] }, apps);
   assert.deepEqual(settings.access, { b: ['manager', 'contractor'], gone: ['manager'] });
-});
-
-test('Contractor Time\'s people are imported with their ids and PINs, and the same person is linked, not doubled', () => {
-  const { list, manager } = setUp(); // Mary Manager, made in AB Apps first
-  const ids = ['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333'];
-  const ctPeople = [
-    { id: ids[0], name: 'Mary  Manager', manager: true, contractor: true, active: true, pin: { hash: 'ct' } },
-    { id: ids[1], name: 'Carl Contractor', manager: false, contractor: true, active: true },
-    { id: ids[2], name: 'Old Hand', manager: false, contractor: true, active: false },
-    { id: 'not-an-id', name: 'Odd' },
-  ];
-  const pins = new Map([[ids[1], { hash: 'carl', salt: 's', setAt: now.toISOString() }]]);
-  const oldId = manager.id;
-  const result = importContractorTime(list, ctPeople, pins, now);
-
-  assert.deepEqual(result.relinked, [{ from: oldId, to: ids[0], name: 'Mary Manager' }]);
-  assert.equal(manager.id, ids[0], 'Mary takes her Contractor Time id');
-  assert.equal(manager.pin.hash !== 'ct', true, 'and keeps her AB Apps PIN');
-  assert.deepEqual(result.added.map((p) => [p.name, p.class, p.active, Boolean(p.pin)]), [
-    ['Carl Contractor', 'contractor', true, true],
-    ['Old Hand', 'contractor', false, false],
-  ]);
-  assert.deepEqual(result.notes, ['Old Hand was added without a PIN; set one before they sign in']);
-  assert.equal(list.find((p) => p.id === ids[1]).pin.hash, 'carl');
-
-  // Importing again changes nothing.
-  const again = importContractorTime(list, ctPeople, pins, now);
-  assert.deepEqual([again.added.length, again.relinked.length], [0, 0]);
-  assert.equal(list.length, 3);
 });
 
 test('identity.json is written for the apps, and removed on sign-out', () => {

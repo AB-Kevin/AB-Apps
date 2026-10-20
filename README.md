@@ -45,14 +45,6 @@ How the apps use it:
 - **Contractor Time** has no sign-in of its own. It uses whoever is signed in here, reads names, classes and who is turned off from this folder's `shared/people.json`, and follows along when someone signs in or out. It keeps only rates, templates and invoice numbers itself.
 - **BillManager** and **ApplicationManager** sign comments with `name`. Without AB Apps, they use the comment name set on that computer.
 
-### Moving people from Contractor Time
-
-Contractor Time kept its own people and PINs before it used AB Apps. A manager moves them here with **Import from Contractor Time** on the People page, choosing Contractor Time's data folder:
-
-- Everyone keeps their id, so their time and invoices stay theirs, and the PIN they used in Contractor Time. Managers stay managers; everyone else becomes a contractor, which a manager can change to employee.
-- Someone already here under the same name, such as the manager who set up AB Apps, is linked: they keep their class and PIN here and take their Contractor Time id. Anyone linked who is signed in on another computer signs in again there.
-- Importing again only adds people who weren't imported before.
-
 Like the PIN, this is a convenience, not a security boundary. Anyone using the same Windows account can change the file, and anyone with access to the shared folder can edit the people list. What each app's data folder is shared with still decides who can use its data.
 
 ## Adding an app

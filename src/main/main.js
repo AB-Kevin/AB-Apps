@@ -10,7 +10,7 @@ const { pinProblem, hashPin, verifyPin, currentPin, Lockout } = require('./auth'
 const { loadCatalog, loadIcon, appsFor, CLASSES } = require('./catalog');
 const { releasesPage, isNewer, latestRelease, downloadInstaller } = require('./releases');
 const installed = require('./installed');
-const { CLASS_NAMES, savePerson, saveAccess, importContractorTime } = require('./people');
+const { CLASS_NAMES, savePerson, saveAccess } = require('./people');
 const identity = require('./identity');
 
 const APP_ID = 'org.anabaptistbrotherhood.abapps';
@@ -578,46 +578,6 @@ function registerHandlers() {
     fail(errors);
     store.savePeople(people);
     if (input.id === actor.id) signIn(people.find((p) => p.id === actor.id), session.signedInAt); // a new name reaches identity.json
-  });
-
-  // People from a Contractor Time folder made before it used AB Apps' sign-in.
-  handle('mgr:import-contractor-time', async () => {
-    asManager();
-    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
-      title: 'Choose the Contractor Time data folder',
-      properties: ['openDirectory'],
-    });
-    if (canceled || !filePaths[0]) return null;
-    const ctDir = filePaths[0];
-    const ctFile = path.join(ctDir, 'shared', 'people.json');
-    if (!fs.existsSync(ctFile)) throw new UserError("That isn't a Contractor Time data folder: it has no shared\\people.json.");
-    const ctPeople = readJson(ctFile, { people: [] }).people;
-    // Each person's PIN: the one a manager set, or the one they chose since, as Contractor Time decides.
-    const pins = new Map();
-    for (const p of ctPeople) {
-      if (!/^[0-9a-f-]{36}$/i.test(p?.id ?? '')) continue;
-      let profile = {};
-      try {
-        profile = readJson(path.join(ctDir, 'people', p.id, 'profile.json'), {});
-      } catch {
-        // a damaged profile only means the manager's PIN is used
-      }
-      const pin = currentPin(p, profile);
-      if (pin) pins.set(p.id, pin);
-    }
-
-    const list = store.people();
-    const result = importContractorTime(list, ctPeople, pins, new Date());
-    if (!result.added.length && !result.relinked.length) return { added: 0, relinked: [], notes: result.notes };
-    store.savePeople(list);
-    // What was kept here under someone's old id moves to the Contractor Time id.
-    for (const { from, to } of result.relinked) {
-      const oldDir = path.dirname(store.personal(from, 'profile.json'));
-      const newDir = path.dirname(store.personal(to, 'profile.json'));
-      if (fs.existsSync(oldDir) && !fs.existsSync(newDir)) fs.renameSync(oldDir, newDir);
-      if (session?.personId === from) signIn(list.find((p) => p.id === to), session.signedInAt);
-    }
-    return { added: result.added.length, relinked: result.relinked.map((r) => r.name), notes: result.notes };
   });
 
   handle('mgr:access', () => {

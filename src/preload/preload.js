@@ -33,7 +33,6 @@ contextBridge.exposeInMainWorld('api', {
 
   people: () => call('mgr:people'),
   savePerson: (input) => call('mgr:person:save', input),
-  importContractorTime: () => call('mgr:import-contractor-time'),
   access: () => call('mgr:access'),
   saveAccess: (input) => call('mgr:access:save', input),
 });

@@ -75,46 +75,4 @@ function saveAccess(settings, input, apps) {
   return [];
 }
 
-/**
- * Adds the people from a Contractor Time folder made before it used AB Apps.
- * Contractor Time keeps each person's time and invoices under their id, so
- * the ids are kept: managers become managers, everyone else contractors, and
- * each keeps the PIN in `pins` (by id). Someone already here under the same
- * name is taken to be the same person: they keep their class and PIN here and
- * take the Contractor Time id, which `relinked` lists as { from, to } so the
- * caller can move what's stored under the old id. Changes `list` in place.
- */
-function importContractorTime(list, ctPeople, pins, now) {
-  const result = { added: [], relinked: [], notes: [] };
-  for (const p of Array.isArray(ctPeople) ? ctPeople : []) {
-    if (!/^[0-9a-f-]{36}$/i.test(p?.id ?? '') || typeof p.name !== 'string' || !p.name.trim()) continue;
-    const name = p.name.trim().replace(/\s+/g, ' ');
-    if (list.some((x) => x.id === p.id)) continue; // imported before
-    const same = list.filter((x) => sameName(x.name, name));
-    if (same.length > 1) {
-      result.notes.push(`${name} wasn't imported: more than one person here has that name`);
-      continue;
-    }
-    if (same.length === 1) {
-      result.relinked.push({ from: same[0].id, to: p.id, name });
-      same[0].id = p.id;
-      same[0].updated = now.toISOString();
-      continue;
-    }
-    const person = {
-      id: p.id,
-      created: p.created ?? now.toISOString(),
-      name,
-      class: p.manager ? 'manager' : 'contractor',
-      active: Boolean(p.active),
-      updated: now.toISOString(),
-    };
-    if (pins.get(p.id)) person.pin = pins.get(p.id);
-    else result.notes.push(`${name} was added without a PIN; set one before they sign in`);
-    list.push(person);
-    result.added.push(person);
-  }
-  return result;
-}
-
-module.exports = { CLASS_NAMES, savePerson, saveAccess, importContractorTime };
+module.exports = { CLASS_NAMES, savePerson, saveAccess };

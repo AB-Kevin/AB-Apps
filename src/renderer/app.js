@@ -292,8 +292,7 @@ async function peopleView() {
   return html`<div class="page">
     <div class="page-head"><div><h1>People</h1><p class="sub">Everyone who signs in to AB Apps. Managers manage people and app access;
       employees and contractors get the apps set for them.</p></div>
-      <div class="actions"><button class="btn btn-secondary" data-action="import-contractor-time">Import from Contractor Time</button>
-        <button class="btn btn-primary" data-action="edit-person">Add person</button></div></div>
+      <div class="actions"><button class="btn btn-primary" data-action="edit-person">Add person</button></div></div>
     <div class="table-wrap"><table class="data">
       <thead><tr><th>Name</th><th>Class</th><th>Status</th><th></th></tr></thead>
       <tbody>${people.map((p) => html`<tr class="${p.active ? '' : 'is-off'}"><td>${p.name}</td><td>${p.className}</td>
@@ -589,24 +588,6 @@ const ACTIONS = {
   },
 
   'edit-person': (d) => personDialog(ui.people.find((p) => p.id === d.id) ?? null),
-
-  // Contractor Time used to keep its own people; this brings them here with their PINs.
-  async 'import-contractor-time'() {
-    const result = await api.importContractorTime();
-    if (!result) return;
-    await go('people');
-    const lines = [
-      result.added ? `${result.added === 1 ? 'One person was' : `${result.added} people were`} added.` : 'No one new was added.',
-      ...result.relinked.map((name) => `${name} was already here, and is now linked to their Contractor Time time and invoices.`),
-      ...result.notes,
-    ];
-    openDialog(html`<div>
-      <h2>Imported from Contractor Time</h2>
-      ${lines.map((line) => html`<p>${line}</p>`)}
-      <p class="small muted">Anyone linked who is signed in on another computer needs to sign in to AB Apps again there.</p>
-      <div class="dialog-actions"><button class="btn btn-primary" data-action="close-dialog">Done</button></div>
-    </div>`);
-  },
 
   async 'check-update'() {
     update.checking = true;
