@@ -42,7 +42,7 @@ An app that supports AB Apps reads it to know who is using it, for example to si
 
 How the apps use it:
 
-- **Contractor Time** has no sign-in of its own. It uses whoever is signed in here, reads names, classes and who is turned off from this folder's `shared/people.json`, and follows along when someone signs in or out. It keeps only rates, templates and invoice numbers itself.
+- **KeepTime** has no sign-in of its own. It uses whoever is signed in here, reads names, classes and who is turned off from this folder's `shared/people.json`, and follows along when someone signs in or out. It keeps only rates, templates and invoice numbers itself.
 - **BillManager** and **ApplicationManager** sign comments with `name`. Without AB Apps, they use the comment name set on that computer.
 
 Like the PIN, this is a convenience, not a security boundary. Anyone using the same Windows account can change the file, and anyone with access to the shared folder can edit the people list. What each app's data folder is shared with still decides who can use its data.
@@ -77,7 +77,7 @@ Add an entry to [`catalog.json`](catalog.json) and push it to the main branch. E
 The app itself needs:
 
 - An electron-builder NSIS installer, per-user (`perMachine` false, the default).
-- Releases tagged `vX.Y.Z` with the installer and the `latest.yml` electron-builder writes beside it. electron-builder writes `latest.yml` when package.json's `build.publish` names the GitHub repository; publishing with electron-updater, or uploading it with the installer as Duplicate Checker and Contractor Time do, both work.
+- Releases tagged `vX.Y.Z` with the installer and the `latest.yml` electron-builder writes beside it. electron-builder writes `latest.yml` when package.json's `build.publish` names the GitHub repository; publishing with electron-updater, or uploading it with the installer as Duplicate Checker and KeepTime do, both work.
 
 An entry with a problem is left out, and the reason is logged when AB Apps starts from a terminal.
 
