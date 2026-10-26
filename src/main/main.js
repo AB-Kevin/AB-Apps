@@ -210,7 +210,8 @@ async function runJob(id) {
     const before = await findInstall(a);
     job.op = before ? 'update' : 'install';
     if (before?.scope === 'machine') {
-      throw new Error(`${a.name} is installed for everyone on this computer, so it updates itself. Open it and check for updates there.`);
+      // Its installer is per-user now, so updating it in place would add a second copy.
+      throw new Error(`${a.name} is installed for everyone on this computer. Uninstall it in Windows Settings, Apps, then install it here. Its settings are kept.`);
     }
     if (before && (await installed.isRunning(before.exe))) throw new Error(`Close ${a.name} first, then try again.`);
 

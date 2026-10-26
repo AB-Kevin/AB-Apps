@@ -210,7 +210,7 @@ function appStatus(a) {
   if (a.installed) {
     if (a.updateAvailable) {
       return a.installed.scope === 'machine'
-        ? { text: `Version ${a.installed.version}. Version ${a.latest.version} is available; ${a.name} updates itself.` }
+        ? { text: `Version ${a.installed.version}, installed for everyone. To get version ${a.latest.version}, uninstall it in Windows Settings, then install it here.` }
         : { text: `Version ${a.installed.version}. Version ${a.latest.version} is available.` };
     }
     return { text: `Version ${a.installed.version}${a.latest ? ', the latest' : ''}.` };

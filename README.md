@@ -87,7 +87,7 @@ An entry with a problem is left out, and the reason is logged when AB Apps start
 - It finds installed apps in the registry key electron-builder makes from the `appId` (`src/main/installed.js`).
 - Installers are checked against the SHA-512 digest in `latest.yml`, then run silently for the current Windows account only (`/S /currentuser`), one at a time, so no administrator prompt appears. Updates also pass `--updated`, which keeps the app's shortcuts as they are.
 - An app that's open isn't updated; AB Apps asks the person to close it first.
-- An app someone installed **for all users** isn't updated by AB Apps, since that needs an administrator; it updates itself.
+- Every app's installer is per-user and asks no questions (`oneClick` true, `perMachine` false), like AB Apps' own. A copy someone installed **for all users** with an older installer isn't updated by AB Apps, since that needs an administrator, and its own updater would now add a second, per-user copy beside it. AB Apps asks the person to uninstall it in Windows Settings, then install it here; its settings are kept.
 - The first time someone signs in on a computer, AB Apps installs their apps automatically. It does that only once per app, so an app someone uninstalls on purpose isn't put back. They can still install it from **My apps**.
 - Taking an app away on **App access** doesn't uninstall it; AB Apps just stops showing it.
 
