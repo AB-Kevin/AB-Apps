@@ -3,13 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const nodemailer = require('nodemailer');
 const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeTheme, net } = require('electron');
-const { readJson, writeJson } = require('./jsonfile');
+const { readJson, writeJson } = require('ab-common/jsonfile');
 const { Store } = require('./store');
 const { pinProblem, hashPin, verifyPin, currentPin, Lockout } = require('./auth');
 const { loadCatalog, loadIcon, appsFor, CLASSES } = require('./catalog');
-const { releasesPage, isNewer, latestRelease, downloadInstaller } = require('./releases');
+const { releasesPage, isNewer, latestRelease, downloadInstaller } = require('ab-common/releases');
+const { verifyConnection } = require('ab-common/mailer');
+const { listForms } = require('ab-common/gravityforms');
 const installed = require('./installed');
 const { CLASS_NAMES, savePerson, saveAccess } = require('./people');
 const identity = require('./identity');
@@ -624,9 +625,8 @@ function registerHandlers() {
     asManager();
     const { errors, services } = readServices({ mail: input });
     fail(errors);
-    const { host, port, secure } = services.mail;
     try {
-      await nodemailer.createTransport({ host, port, secure, connectionTimeout: 30000 }).verify();
+      await verifyConnection(services.mail);
     } catch (err) {
       throw new UserError(`The mail server didn't accept a connection from this computer: ${err.message}`);
     }
@@ -636,18 +636,11 @@ function registerHandlers() {
     asManager();
     const { errors, services } = readServices({ website: input }, store.services());
     fail(errors);
-    const { siteUrl, consumerKey, consumerSecret } = services.website;
-    let response;
     try {
-      response = await net.fetch(`${siteUrl}/wp-json/gf/v2/forms`, {
-        headers: { Authorization: `Basic ${Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64')}`, Accept: 'application/json' },
-      });
+      return (await listForms(services.website, { fetch: net.fetch })).length;
     } catch (err) {
-      throw new UserError(`The website couldn't be reached: ${err.message}`);
+      throw new UserError(err.message);
     }
-    if (!response.ok) throw new UserError(`Gravity Forms answered ${response.status}. Check the website address and the key and secret.`);
-    const forms = await response.json();
-    return (Array.isArray(forms) ? forms : Object.values(forms ?? {})).length;
   });
 }
 

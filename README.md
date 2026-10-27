@@ -115,8 +115,8 @@ An entry with a problem is left out, and the reason is logged when AB Apps start
 
 ## How installs work
 
-- AB Apps reads each app's `latest.yml` from its latest release's download link (`src/main/releases.js`), not the GitHub API, so a whole office can check without reaching GitHub's limit of 60 API requests an hour per network.
-- It finds installed apps in the registry key electron-builder makes from the `appId` (`src/main/installed.js`).
+- AB Apps reads each app's `latest.yml` from its latest release's download link (`releases` in [ab-common](https://github.com/AB-Kevin/ab-common)), not the GitHub API, so a whole office can check without reaching GitHub's limit of 60 API requests an hour per network.
+- It finds installed apps in the registry key electron-builder makes from the `appId` (`installs` in ab-common).
 - Installers are checked against the SHA-512 digest in `latest.yml`, then run silently for the current Windows account only (`/S /currentuser`), one at a time, so no administrator prompt appears. Updates also pass `--updated`, which keeps the app's shortcuts as they are.
 - An app that's open isn't updated; AB Apps asks the person to close it first.
 - Every app's installer is per-user and asks no questions (`oneClick` true, `perMachine` false), like AB Apps' own. A copy someone installed **for all users** with an older installer isn't updated by AB Apps, since that needs an administrator, and its own updater would now add a second, per-user copy beside it. AB Apps asks the person to uninstall it in Windows Settings, then install it here; its settings are kept.
@@ -141,7 +141,7 @@ Each computer keeps its own settings in `%APPDATA%\AB Apps\config.json`: the fol
 ```
 npm install
 npm start      # run the app
-npm test       # unit tests for the catalog, releases, registry lookup, people rules, identity file and shared services
+npm test       # unit tests for the catalog, people rules, identity file and shared services
 npm run dist   # build the Windows installer into dist/
 ```
 
@@ -166,8 +166,8 @@ The release appears on the repository's **Releases** page a few minutes later as
 | `catalog.json` | the apps AB Apps offers |
 | `src/main/main.js` | the window, sign-in, the install queue, and the handlers the window calls |
 | `src/main/catalog.js` | reading and checking the catalog, and app icons |
-| `src/main/releases.js` | reading `latest.yml` and downloading installers |
-| `src/main/installed.js` | finding installed apps, running installers, opening apps |
+| `src/main/installed.js` | checking whether an app is running, and running installers |
+| [ab-common](https://github.com/AB-Kevin/ab-common) | shared with the apps: safe JSON files, reading `latest.yml` and downloading installers, finding and opening installed apps, the mail and Gravity Forms connection tests |
 | `src/main/people.js`, `auth.js`, `store.js` | people and access rules; PINs and lockout; the shared folder |
 | `src/main/identity.js` | `identity.json`, for the other apps |
 | `src/main/services.js` | `shared/services.json`: the mail server and website the apps share |

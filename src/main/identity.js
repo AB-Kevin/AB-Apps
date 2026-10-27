@@ -17,7 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { readJson, writeJson } = require('./jsonfile');
+const { readJson, writeJson } = require('ab-common/jsonfile');
 
 const VERSION = 1;
 const identityPath = (userDataDir) => path.join(userDataDir, 'identity.json');

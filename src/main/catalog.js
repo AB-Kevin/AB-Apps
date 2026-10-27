@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { readJson, writeJson } = require('./jsonfile');
+const { readJson, writeJson } = require('ab-common/jsonfile');
 
 const CATALOG_URL = 'https://raw.githubusercontent.com/AB-Kevin/ab-apps/HEAD/catalog.json';
 const ALLOWED_OWNERS = ['AB-Kevin'];

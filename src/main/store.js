@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { readJson, writeJson } = require('./jsonfile');
+const { readJson, writeJson } = require('ab-common/jsonfile');
 const { DEFAULT_SERVICES } = require('./services');
 
 const DEFAULT_SETTINGS = {
