@@ -5,6 +5,7 @@ A Windows desktop app that installs, updates and opens Anabaptist Brotherhood's 
 - **My apps** shows each app with its installed version, and offers **Open**, **Install** or **Update**. **Install and update all** does every app that needs it.
 - Each app still updates itself from its own GitHub releases. AB Apps doesn't need a new release when an app does: it reads each app's latest release when it opens.
 - **Managers** add people on the **People** page, as managers, employees or contractors, and choose which apps each class gets on the **App access** page.
+- **Managers** set the mail server and website the apps share on the **Mail and website** page, once for everyone.
 
 ## Setting it up
 
@@ -46,6 +47,34 @@ How the apps use it:
 - **BillManager** and **ApplicationManager** sign comments with `name`. Without AB Apps, they use the comment name set on that computer.
 
 Like the PIN, this is a convenience, not a security boundary. Anyone using the same Windows account can change the file, and anyone with access to the shared folder can edit the people list. What each app's data folder is shared with still decides who can use its data.
+
+## Mail and website for the apps
+
+FormTracker, SendNewsletters and KeepTime send email, and ApplicationManager, FormTracker and SendNewsletters read the website's Gravity Forms API. A manager sets both once on the **Mail and website** page. AB Apps keeps them in the AB Apps folder, where the apps find them through `dataDir` in `identity.json`:
+
+`shared/services.json`
+
+```json
+{
+  "version": 1,
+  "mail": {
+    "host": "yourdomain-org.mail.protection.outlook.com",
+    "port": 25,
+    "secure": false,
+    "fromName": "Anabaptist Brotherhood",
+    "fromEmail": "info@example.org"
+  },
+  "website": {
+    "siteUrl": "https://example.org",
+    "consumerKey": "ck_…",
+    "consumerSecret": "cs_…"
+  }
+}
+```
+
+- **The mail server** is one that takes mail without signing in, such as the office's Microsoft 365 relay, so there's no password to share. A relay like that usually only accepts mail from the office's network, so **Test connection** fails from home. While one is set, the apps send through it and their own SMTP settings wait unused, folded away on their Settings pages.
+- **The website** is the address and a Gravity Forms consumer key and secret. Everyone with the AB Apps folder can read this file, so give the key **Read** permission only. Each app still keeps which form it uses, and its field IDs or mapping.
+- `mail` or `website` is `null` until a manager sets it. Leaving every field in a section blank turns it off again. An app that finds no file, a section that's `null`, or a `version` it doesn't know uses its own settings, as it does when nobody is signed in to AB Apps.
 
 ## Adding an app
 
@@ -99,6 +128,7 @@ OneDrive can't merge two computers' changes to one file, so every file has one k
 | --- | --- |
 | `shared/people.json` | managers: names, classes, PINs they set |
 | `shared/settings.json` | managers: which classes get which apps, where it differs from the catalog |
+| `shared/services.json` | managers: the mail server and website the apps share |
 | `people/<id>/profile.json` | that person: a PIN they chose |
 
 Each computer keeps its own settings in `%APPDATA%\AB Apps\config.json`: the folder, who is signed in, the theme, and which apps were installed automatically.
@@ -108,7 +138,7 @@ Each computer keeps its own settings in `%APPDATA%\AB Apps\config.json`: the fol
 ```
 npm install
 npm start      # run the app
-npm test       # unit tests for the catalog, releases, registry lookup, people rules and identity file
+npm test       # unit tests for the catalog, releases, registry lookup, people rules, identity file and shared services
 npm run dist   # build the Windows installer into dist/
 ```
 
@@ -137,4 +167,5 @@ The release appears on the repository's **Releases** page a few minutes later as
 | `src/main/installed.js` | finding installed apps, running installers, opening apps |
 | `src/main/people.js`, `auth.js`, `store.js` | people and access rules; PINs and lockout; the shared folder |
 | `src/main/identity.js` | `identity.json`, for the other apps |
+| `src/main/services.js` | `shared/services.json`: the mail server and website the apps share |
 | `src/renderer/` | the window: `app.js` and `styles.css` (Anabaptist Brotherhood brand tokens, light and dark) |

@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const nodemailer = require('nodemailer');
 const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeTheme, net } = require('electron');
 const { readJson, writeJson } = require('./jsonfile');
 const { Store } = require('./store');
@@ -12,6 +13,7 @@ const { releasesPage, isNewer, latestRelease, downloadInstaller } = require('./r
 const installed = require('./installed');
 const { CLASS_NAMES, savePerson, saveAccess } = require('./people');
 const identity = require('./identity');
+const { readServices, publicServices } = require('./services');
 
 const APP_ID = 'org.anabaptistbrotherhood.abapps';
 const SELF_REPO = 'AB-Kevin/ab-apps';
@@ -601,6 +603,51 @@ function registerHandlers() {
     fail(saveAccess(settings, input, catalog.apps));
     store.saveSettings(settings);
     await refreshApps({ withReleases: true });
+  });
+
+  handle('mgr:services', () => {
+    asManager();
+    return publicServices(store.services());
+  });
+
+  handle('mgr:services:save', (input) => {
+    asManager();
+    const { errors, services } = readServices(input, store.services());
+    fail(errors);
+    store.saveServices(services);
+    return publicServices(services);
+  });
+
+  // Tests what's on the form, before it's saved. Connecting is the test: a
+  // relay that trusts the office's address turns away other networks.
+  handle('mgr:services:test-mail', async (input) => {
+    asManager();
+    const { errors, services } = readServices({ mail: input });
+    fail(errors);
+    const { host, port, secure } = services.mail;
+    try {
+      await nodemailer.createTransport({ host, port, secure, connectionTimeout: 30000 }).verify();
+    } catch (err) {
+      throw new UserError(`The mail server didn't accept a connection from this computer: ${err.message}`);
+    }
+  });
+
+  handle('mgr:services:test-website', async (input) => {
+    asManager();
+    const { errors, services } = readServices({ website: input }, store.services());
+    fail(errors);
+    const { siteUrl, consumerKey, consumerSecret } = services.website;
+    let response;
+    try {
+      response = await net.fetch(`${siteUrl}/wp-json/gf/v2/forms`, {
+        headers: { Authorization: `Basic ${Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64')}`, Accept: 'application/json' },
+      });
+    } catch (err) {
+      throw new UserError(`The website couldn't be reached: ${err.message}`);
+    }
+    if (!response.ok) throw new UserError(`Gravity Forms answered ${response.status}. Check the website address and the key and secret.`);
+    const forms = await response.json();
+    return (Array.isArray(forms) ? forms : Object.values(forms ?? {})).length;
   });
 }
 

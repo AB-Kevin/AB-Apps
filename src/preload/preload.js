@@ -35,4 +35,8 @@ contextBridge.exposeInMainWorld('api', {
   savePerson: (input) => call('mgr:person:save', input),
   access: () => call('mgr:access'),
   saveAccess: (input) => call('mgr:access:save', input),
+  services: () => call('mgr:services'),
+  saveServices: (input) => call('mgr:services:save', input),
+  testMail: (input) => call('mgr:services:test-mail', input),
+  testWebsite: (input) => call('mgr:services:test-website', input),
 });

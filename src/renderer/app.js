@@ -128,7 +128,7 @@ function loginScreen() {
 
 const NAV = [
   { label: 'Apps', manager: false, items: [['apps', 'My apps']] },
-  { label: 'Manage', manager: true, items: [['people', 'People'], ['access', 'App access']] },
+  { label: 'Manage', manager: true, items: [['people', 'People'], ['access', 'App access'], ['services', 'Mail and website']] },
   { label: 'Account', manager: false, items: [['profile', 'Profile'], ['settings', 'Settings']] },
 ];
 
@@ -344,6 +344,66 @@ async function accessView() {
   </div>`;
 }
 
+// Manager: mail and website ---------------------------------------------------------
+
+async function servicesView() {
+  const { mail, website } = await api.services();
+  const m = mail ?? { host: '', port: 25, secure: false, fromName: '', fromEmail: '' };
+  const w = website ?? { siteUrl: '', consumerKey: '', hasSecret: false };
+  return html`<div class="page narrow">
+    <div class="page-head"><div><h1>Mail and website</h1><p class="sub">Set once here for everyone. FormTracker, SendNewsletters, KeepTime
+      and ApplicationManager use these instead of their own settings while someone is signed in to AB Apps.</p></div></div>
+    <form data-form="services">
+      <div class="form-error"></div>
+      <div class="section" style="margin-top: 0"><h2>Mail server</h2>
+        <p class="small muted" style="margin: 4px 0 12px">A server that takes mail without signing in, such as the office's Microsoft 365
+          relay. It usually only accepts mail from the office's network. Leave every field blank to have each app use its own.</p>
+        <div class="field"><label for="m-host">Server</label><input type="text" id="m-host" name="mail.host" value="${m.host}"
+          placeholder="yourdomain-org.mail.protection.outlook.com"></div>
+        <div class="field-row">
+          <div class="field"><label for="m-port">Port</label><input type="number" id="m-port" name="mail.port" min="1" max="65535" value="${m.port}"></div>
+          <div class="field"><label for="m-secure">Encryption</label><select id="m-secure" name="mail.secure">
+            <option value="false"${flag(!m.secure, 'selected')}>STARTTLS when offered (25 or 587)</option>
+            <option value="true"${flag(m.secure, 'selected')}>TLS from the start (465)</option></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="m-from-name">From name</label><input type="text" id="m-from-name" name="mail.fromName" maxlength="100"
+            value="${m.fromName}" placeholder="Anabaptist Brotherhood"></div>
+          <div class="field"><label for="m-from-email">From address</label><input type="email" id="m-from-email" name="mail.fromEmail"
+            value="${m.fromEmail}"></div>
+        </div>
+        <button class="btn btn-secondary" type="button" data-action="test-mail">Test connection</button>
+      </div>
+      <div class="section"><h2>Website</h2>
+        <p class="small muted" style="margin: 4px 0 12px">The WordPress site's Gravity Forms API, which the apps read signups, responses and
+          applications from. Use a <strong>read-only</strong> key: everyone with the AB Apps folder can read it.</p>
+        <div class="field"><label for="w-url">Website address</label><input type="url" id="w-url" name="website.siteUrl" value="${w.siteUrl}"
+          placeholder="https://anabaptistbrotherhood.org"></div>
+        <div class="field-row">
+          <div class="field"><label for="w-key">Consumer key</label><input type="text" id="w-key" name="website.consumerKey" value="${w.consumerKey}"
+            autocomplete="off"></div>
+          <div class="field"><label for="w-secret">Consumer secret</label><input type="password" id="w-secret" name="website.consumerSecret"
+            autocomplete="off" placeholder="${w.hasSecret ? 'Saved; leave blank to keep' : ''}"></div>
+        </div>
+        <button class="btn btn-secondary" type="button" data-action="test-website">Test connection</button>
+      </div>
+      <div class="actions" style="margin-top: 24px"><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+    <p class="small muted" style="margin-top: 16px">Each app still keeps which forms it uses, and anything else particular to it.</p>
+  </div>`;
+}
+
+/** The Mail and website form's values, as { mail, website }. */
+function servicesInput() {
+  const form = $('form[data-form="services"]');
+  const input = { mail: {}, website: {} };
+  for (const [name, value] of new FormData(form)) {
+    const [section, key] = name.split('.');
+    input[section][key] = value;
+  }
+  return input;
+}
+
 // Profile --------------------------------------------------------------------------
 
 async function profileView() {
@@ -457,6 +517,7 @@ const VIEWS = {
   apps: appsView,
   people: peopleView,
   access: accessView,
+  services: servicesView,
   profile: profileView,
   settings: settingsView,
 };
@@ -495,6 +556,12 @@ const FORMS = {
     }
     await api.saveAccess(input);
     toast('App access saved. Each person sees the change the next time AB Apps opens or checks for updates.');
+  },
+
+  async services() {
+    await api.saveServices(servicesInput());
+    await drawView();
+    toast('Saved. The apps use these the next time they send or connect.');
   },
 
   async pin(v, form) {
@@ -615,6 +682,30 @@ const ACTIONS = {
   },
 
   'release-page': () => api.openReleasePage(),
+
+  async 'test-mail'(_d, el) {
+    el.disabled = true;
+    el.textContent = 'Connecting…';
+    try {
+      await api.testMail(servicesInput().mail);
+      toast('The mail server accepted a connection from this computer.');
+    } finally {
+      el.disabled = false;
+      el.textContent = 'Test connection';
+    }
+  },
+
+  async 'test-website'(_d, el) {
+    el.disabled = true;
+    el.textContent = 'Connecting…';
+    try {
+      const count = await api.testWebsite(servicesInput().website);
+      toast(`Connected. Gravity Forms lists ${count} form${count === 1 ? '' : 's'}.`);
+    } finally {
+      el.disabled = false;
+      el.textContent = 'Test connection';
+    }
+  },
 };
 
 FORMS['change-folder'] = async () => {

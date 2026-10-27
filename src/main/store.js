@@ -6,6 +6,7 @@
 //
 //   shared/people.json         managers: names, classes, PINs they set
 //   shared/settings.json       managers: which classes get which apps
+//   shared/services.json       managers: the mail server and website the apps share
 //   people/<id>/profile.json   only that person: a PIN they chose
 //
 // Managers' saves re-read the file and change only the record being saved, so
@@ -14,6 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const { readJson, writeJson } = require('./jsonfile');
+const { DEFAULT_SERVICES } = require('./services');
 
 const DEFAULT_SETTINGS = {
   access: {}, // { [app id]: [classes] }; apps not listed use the catalog's classes
@@ -51,6 +53,14 @@ class Store {
 
   saveSettings(settings) {
     writeJson(this.shared('settings.json'), settings);
+  }
+
+  services() {
+    return { ...DEFAULT_SERVICES, ...readJson(this.shared('services.json'), {}) };
+  }
+
+  saveServices(services) {
+    writeJson(this.shared('services.json'), services);
   }
 
   profile(personId) {
