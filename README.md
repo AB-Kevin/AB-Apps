@@ -45,6 +45,9 @@ How the apps use it:
 
 - **KeepTime** has no sign-in of its own. It uses whoever is signed in here, reads names, classes and who is turned off from this folder's `shared/people.json`, and follows along when someone signs in or out. It keeps only rates, templates and invoice numbers itself.
 - **BillManager** and **ApplicationManager** sign comments with `name`. Without AB Apps, they use the comment name set on that computer.
+- **Duplicate Checker** and **SendNewsletters** show `name` to the others using the same data folder, and record `personId` in each computer's file there. Without AB Apps, they use the name set in their Settings.
+- **FormTracker** shows `name` on its editing lock, so the read-only view says who is editing. Without AB Apps, it uses the Windows user name.
+- Duplicate Checker, SendNewsletters and FormTracker notice a sign-in or sign-out within a few seconds while they are open.
 
 Like the PIN, this is a convenience, not a security boundary. Anyone using the same Windows account can change the file, and anyone with access to the shared folder can edit the people list. What each app's data folder is shared with still decides who can use its data.
 
