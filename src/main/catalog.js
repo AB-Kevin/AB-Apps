@@ -39,6 +39,10 @@ function entryProblems(entry) {
   if (entry?.icon != null && (!/^[A-Za-z0-9._/-]{1,200}\.png$/.test(entry.icon) || entry.icon.split('/').some((part) => !part || part.startsWith('.')))) {
     problems.push('icon must be the path of a PNG in the repository, such as build/icon.png');
   }
+  // The app's subfolder of the AB Apps folder, for an app that keeps its data there.
+  if (entry?.dataFolder != null && (!/^[A-Za-z0-9][A-Za-z0-9 ._-]{0,59}$/.test(entry.dataFolder) || entry.dataFolder.includes('..'))) {
+    problems.push('dataFolder must be a folder name, such as FormTracker');
+  }
   if (!Array.isArray(entry?.classes) || entry.classes.some((c) => !CLASSES.includes(c))) {
     problems.push(`classes must list any of ${CLASSES.join(', ')}`);
   }
@@ -59,8 +63,8 @@ function validateCatalog(catalog) {
       skipped.push(`${entry?.name ?? entry?.id ?? 'An entry'}: ${problems.join('; ')}`);
       continue;
     }
-    const { id, name, description = '', repo, appId, productName, icon = null, classes } = entry;
-    apps.push({ id, name: name.trim(), description: description.trim(), repo, appId, productName, icon, classes: [...new Set(classes)] });
+    const { id, name, description = '', repo, appId, productName, icon = null, dataFolder = null, classes } = entry;
+    apps.push({ id, name: name.trim(), description: description.trim(), repo, appId, productName, icon, dataFolder, classes: [...new Set(classes)] });
   }
   return { apps, skipped };
 }

@@ -51,6 +51,25 @@ How the apps use it:
 
 Like the PIN, this is a convenience, not a security boundary. Anyone using the same Windows account can change the file, and anyone with access to the shared folder can edit the people list. What each app's data folder is shared with still decides who can use its data.
 
+## Where the apps keep their data
+
+Each app keeps its data in its own subfolder of the AB Apps folder, so a computer only ever chooses one folder, here, and every app finds its data by itself while someone is signed in:
+
+| App | Subfolder |
+| --- | --- |
+| KeepTime | `KeepTime` |
+| Duplicate Checker | `Duplicate Checker`, with its Inbox inside |
+| FormTracker | `FormTracker` |
+| SendNewsletters | `SendNewsletters` |
+| ApplicationManager | `ApplicationManager`, the application files and their records |
+
+BillManager isn't one of them: people work with its folders of bills in File Explorer too, so they're chosen as before.
+
+- **Moving data that was somewhere else** happens once per app, from that app, by a manager (on the host computer, in apps that have one). It copies the data into the subfolder and leaves a note in the old folder, which sends every other computer there within a minute or so. The old folder is left as it was, as a backup to delete later.
+- **Settings → For the apps** lists each subfolder. The catalog's `dataFolder` says which apps have one (see below).
+- Everyone the AB Apps folder is shared with can open every app's data in File Explorer, and every computer that syncs it downloads all of it. The apps still only show each person what's theirs.
+- Without AB Apps, or with nobody signed in, each app uses its own folder setting, as before.
+
 ## Mail and website for the apps
 
 FormTracker, SendNewsletters and KeepTime send email, and ApplicationManager, FormTracker and SendNewsletters read the website's Gravity Forms API. A manager sets both once on the **Mail and website** page. AB Apps keeps them in the AB Apps folder, where the apps find them through `dataDir` in `identity.json`:
@@ -105,6 +124,7 @@ Add an entry to [`catalog.json`](catalog.json) and push it to the main branch. E
 | `productName` | The app's `productName` (or `build.productName`). The program is `<productName>.exe`. |
 | `icon` | Optional. A PNG in the repository, shown on the tile. |
 | `classes` | Who gets the app unless a manager changes it on **App access**. |
+| `dataFolder` | Optional. The app's subfolder of the AB Apps folder, for an app that keeps its data there; listed under **Settings → For the apps**. |
 
 The app itself needs:
 

@@ -129,3 +129,11 @@ test('managers\' access choices replace the catalog\'s classes', () => {
   assert.deepEqual(appsFor('contractor', apps, { a: ['contractor'], b: [] }).map((a) => a.id), ['a']);
   assert.deepEqual(appsFor('employee', apps).map((a) => a.id), []);
 });
+
+test('an app that keeps its data in the AB Apps folder names its subfolder', () => {
+  const { apps, skipped } = validateCatalog({ apps: [entry({ dataFolder: 'Duplicate Checker' }), entry({ id: 'x', dataFolder: '../Elsewhere' }), entry({ id: 'y' })] });
+  assert.deepEqual(apps.map((a) => [a.id, a.dataFolder]), [['billmanager', 'Duplicate Checker'], ['y', null]]);
+  assert.match(skipped.join(), /dataFolder must be a folder name/);
+  const bundled = validateCatalog(JSON.parse(fs.readFileSync(BUNDLED, 'utf8'))).apps;
+  assert.deepEqual(bundled.filter((a) => a.dataFolder).map((a) => a.dataFolder).sort(), ['ApplicationManager', 'Duplicate Checker', 'FormTracker', 'KeepTime', 'SendNewsletters']);
+});

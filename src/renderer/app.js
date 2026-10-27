@@ -500,6 +500,10 @@ async function settingsView() {
       <p class="small muted" style="margin-top: 4px">${source ? `The list of apps came from ${source}. ` : ''}Apps that support AB Apps read who is
         signed in from this file:</p>
       <p class="path">${state.identityPath}</p>
+      <p class="small muted" style="margin-top: 12px">Each app keeps its data in its own subfolder of the AB Apps folder, and finds it there by itself.
+        Data that was somewhere else before stays there until a manager moves it, once, from that app.</p>
+      <table class="data" style="margin-top: 8px"><tbody>${(state.appFolders ?? []).map((f) => html`<tr><td>${f.name}</td>
+        <td class="path" style="margin: 0">${f.path}</td><td class="small muted">${f.exists ? '' : 'Not there yet'}</td></tr>`)}</tbody></table>
     </div>
   </div>`;
 }

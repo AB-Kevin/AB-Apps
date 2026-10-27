@@ -419,6 +419,11 @@ function screenState() {
     apps: appsState(),
     catalogSource: catalog.source,
     identityPath: identity.identityPath(app.getPath('userData')),
+    // Where each app keeps its data: its subfolder of the AB Apps folder.
+    appFolders: catalog.apps.filter((a) => a.dataFolder).map((a) => {
+      const dir = path.join(store.dataDir, a.dataFolder);
+      return { name: a.name, path: dir, exists: fs.existsSync(dir) };
+    }),
   };
 }
 

@@ -18,6 +18,7 @@
       "appId": "org.anabaptistbrotherhood.duplicatechecker",
       "productName": "Duplicate Checker",
       "icon": "build/icon.png",
+      "dataFolder": "Duplicate Checker",
       "classes": ["manager", "employee", "contractor"]
     },
     {
@@ -28,6 +29,7 @@
       "appId": "com.applicationmanager.filemanager",
       "productName": "ApplicationManager",
       "icon": "build/icon.png",
+      "dataFolder": "ApplicationManager",
       "classes": ["manager", "employee", "contractor"]
     },
     {
@@ -38,6 +40,7 @@
       "appId": "com.formtracker.app",
       "productName": "FormTracker",
       "icon": "build/icon.png",
+      "dataFolder": "FormTracker",
       "classes": ["manager", "employee", "contractor"]
     },
     {
@@ -48,6 +51,7 @@
       "appId": "org.anabaptistbrotherhood.contractortime",
       "productName": "KeepTime",
       "icon": "build/icon.png",
+      "dataFolder": "KeepTime",
       "classes": ["manager", "employee", "contractor"]
     },
     {
@@ -58,6 +62,7 @@
       "appId": "com.sendnewsletters.app",
       "productName": "SendNewsletters",
       "icon": "build/icon.png",
+      "dataFolder": "SendNewsletters",
       "classes": ["manager", "employee", "contractor"]
     }
 
