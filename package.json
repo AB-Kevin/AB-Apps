@@ -1,7 +1,7 @@
 {
   "name": "ab-apps",
   "productName": "AB Apps",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Installs, updates and opens Anabaptist Brotherhood's in-house apps, and signs people in once for all of them.",
   "author": "Anabaptist Brotherhood",
   "license": "UNLICENSED",
