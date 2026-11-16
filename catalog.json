@@ -64,6 +64,17 @@
       "icon": "build/icon.png",
       "dataFolder": "SendNewsletters",
       "classes": ["manager", "employee", "contractor"]
+    },
+    {
+     "id": "membermanager",
+      "name": "MemberManager",
+      "description": "Keep the member list FormTracker and SendNewsletters use: people, households, churches, newsletters and your own fields.",
+      "repo": "AB-Kevin/MemberManager",
+      "appId": "org.anabaptistbrotherhood.membermanager",
+      "productName": "MemberManager",
+      "icon": "build/icon.png",
+      "dataFolder": "MemberManager",
+      "classes": ["manager", "employee", "contractor"]
     }
 
   ]
