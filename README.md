@@ -62,6 +62,7 @@ Each app keeps its data in its own subfolder of the AB Apps folder, so a compute
 | FormTracker | `FormTracker` |
 | SendNewsletters | `SendNewsletters` |
 | ApplicationManager | `ApplicationManager`, the application files and their records |
+| MemberManager | `MemberManager` |
 
 BillManager isn't one of them: people work with its folders of bills in File Explorer too, so they're chosen as before.
 

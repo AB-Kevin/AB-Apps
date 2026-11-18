@@ -268,12 +268,39 @@ async function appsView() {
 }
 
 /** Redraws My apps in place as installs move along, without a trip to the main process. */
+/** Makes `current` match `next`, keeping every node that's already right. */
+function morph(current, next) {
+  if (current.isEqualNode(next)) return;
+  if (current.nodeName !== next.nodeName) {
+    current.replaceWith(next);
+    return;
+  }
+  if (current.nodeType !== Node.ELEMENT_NODE) {
+    current.nodeValue = next.nodeValue;
+    return;
+  }
+  for (const { name } of [...current.attributes]) if (!next.hasAttribute(name)) current.removeAttribute(name);
+  for (const { name, value } of next.attributes) if (current.getAttribute(name) !== value) current.setAttribute(name, value);
+  morphChildren(current, next);
+}
+
+function morphChildren(current, next) {
+  const olds = [...current.childNodes];
+  const news = [...next.childNodes];
+  if (olds.length !== news.length) current.replaceChildren(...news);
+  else olds.forEach((node, i) => morph(node, news[i]));
+}
+
+// Install progress redraws My apps several times a second. Rebuilding the page
+// each time would replace the buttons under the mouse, and a click only counts
+// when the button pressed is still there when it's released. So only what
+// changed is updated.
 function drawApps() {
-  if (view !== 'apps' || !$('#content')) return;
   const content = $('#content');
-  const scroll = content.scrollTop;
-  content.innerHTML = appsBody().s;
-  content.scrollTop = scroll;
+  if (view !== 'apps' || !content) return;
+  const next = document.createElement('div');
+  next.innerHTML = appsBody().s;
+  morphChildren(content, next);
 }
 
 api.onAppsChanged((apps) => {

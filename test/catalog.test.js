@@ -21,10 +21,10 @@ const entry = (changes = {}) => ({
   ...changes,
 });
 
-test('the built-in catalog lists the six apps, all valid', () => {
+test('the built-in catalog lists the seven apps, all valid', () => {
   const { apps, skipped } = validateCatalog(JSON.parse(fs.readFileSync(BUNDLED, 'utf8')));
   assert.deepEqual(skipped, []);
-  assert.deepEqual(apps.map((a) => a.name), ['BillManager', 'Duplicate Checker', 'ApplicationManager', 'FormTracker', 'KeepTime', 'SendNewsletters']);
+  assert.deepEqual(apps.map((a) => a.name), ['BillManager', 'Duplicate Checker', 'ApplicationManager', 'FormTracker', 'KeepTime', 'SendNewsletters', 'MemberManager']);
 });
 
 test('entries that could run something unexpected are left out', () => {
@@ -75,7 +75,7 @@ test('the catalog comes from GitHub and is saved for when GitHub is unreachable'
   fs.rmSync(cachePath);
   const third = await loadCatalog({ fetch: offline, cachePath, bundledPath: BUNDLED });
   assert.equal(third.source, 'built-in');
-  assert.equal(third.apps.length, 6);
+  assert.equal(third.apps.length, 7);
 });
 
 test('a broken catalog on GitHub doesn\'t replace a good saved one', async () => {
@@ -135,5 +135,5 @@ test('an app that keeps its data in the AB Apps folder names its subfolder', () 
   assert.deepEqual(apps.map((a) => [a.id, a.dataFolder]), [['billmanager', 'Duplicate Checker'], ['y', null]]);
   assert.match(skipped.join(), /dataFolder must be a folder name/);
   const bundled = validateCatalog(JSON.parse(fs.readFileSync(BUNDLED, 'utf8'))).apps;
-  assert.deepEqual(bundled.filter((a) => a.dataFolder).map((a) => a.dataFolder).sort(), ['ApplicationManager', 'Duplicate Checker', 'FormTracker', 'KeepTime', 'SendNewsletters']);
+  assert.deepEqual(bundled.filter((a) => a.dataFolder).map((a) => a.dataFolder).sort(), ['ApplicationManager', 'Duplicate Checker', 'FormTracker', 'KeepTime', 'MemberManager', 'SendNewsletters']);
 });
